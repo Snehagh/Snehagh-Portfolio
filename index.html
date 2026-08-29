@@ -298,6 +298,28 @@
 
   .no-match { display: none; text-align: center; padding: 40px; color: var(--muted); font-family: var(--f-mono); font-size: 0.85rem; }
 
+  /* Inline architecture diagrams inside cards */
+  .card-diagram { margin: 18px 0 2px; }
+  .card-diagram svg { width: 100%; height: auto; display: block; }
+  .card-diagram .dnode { fill: var(--surface); stroke: var(--line-2); stroke-width: 1.3; }
+  .card-diagram .dnode.hot { stroke: var(--sde); }
+  .card-diagram .dnode.warm { stroke: var(--ai); }
+  .card-diagram .dedge { fill: none; stroke: var(--line-2); stroke-width: 1.3; }
+  .card-diagram .dlbl { font-family: var(--f-mono); font-size: 11px; fill: var(--ink-2); letter-spacing: 0.02em; }
+  .card-diagram .dsub { font-family: var(--f-mono); font-size: 9px; fill: var(--faint); }
+
+  /* Additional work (compact, de-emphasized list) */
+  .more-wrap { padding-top: 0; }
+  .more-head { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; }
+  .more-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 780px) { .more-list { grid-template-columns: 1fr; } }
+  .more-list li { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; background: var(--surface); }
+  .more-main { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .more-title { font-family: var(--f-display); font-weight: 600; font-size: 0.98rem; letter-spacing: -0.01em; }
+  .more-list p { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+  .more-list a { color: var(--ai); font-family: var(--f-mono); font-size: 0.74rem; }
+  .more-list a:hover { text-decoration: underline; }
+
   /* ---------- Experience ---------- */
   .timeline { border-left: 1px solid var(--line-2); margin-left: 6px; }
   .job { position: relative; padding: 0 0 44px 34px; }
@@ -500,7 +522,7 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="idx">02</span>
-        <h2 id="work-h">Selected work</h2>
+        <h2 id="work-h">Featured projects</h2>
         <span class="sub">Filter by the role you’re hiring for. Every project is tagged by the track it demonstrates.</span>
       </div>
 
@@ -513,136 +535,89 @@
 
       <div class="work-grid" id="workGrid">
 
-        <!-- FLAGSHIP -->
-        <article class="card flagship reveal" data-track="sde ai">
+        <!-- FEATURED 1: Distributed Task Queue (lead) -->
+        <article class="card flagship reveal" data-track="sde">
           <div class="card-body">
             <div class="left">
-              <div class="flag-note">◆ Flagship project</div>
+              <div class="flag-note">&#9670; Featured project</div>
               <div class="card-top">
                 <div>
-                  <h3>Agentic Career Copilot</h3>
-                  <div class="yr">2026 · full-stack, built end to end</div>
+                  <h3>Distributed Task Queue &amp; Scheduler</h3>
+                  <div class="yr">Backend / distributed systems</div>
                 </div>
-                <div class="tracks">
-                  <span class="pill sde">Eng</span>
-                  <span class="pill ai">AI</span>
-                </div>
+                <div class="tracks"><span class="pill sde">Eng</span></div>
               </div>
               <p>
-                A production-structured local demo combining real semantic retrieval (RAG) with a
-                swappable LLM orchestration layer, behind a FastAPI service with REST endpoints,
-                containerized with Docker and shipped through GitHub Actions CI/CD with pytest coverage.
-                I prioritized reliability and maintainability over live scraping as a deliberate design trade-off.
+                A job-processing service that accepts work over a REST API, queues it in Redis, and runs it
+                across a pool of workers. Handles retries with exponential backoff, a dead-letter queue for
+                failed jobs, and job-status tracking in PostgreSQL, all wired together with docker-compose
+                and GitHub Actions CI. Ships with a full pytest suite and a clean lint pass.
               </p>
-              <div class="stack">
-                <span>Python</span><span>FastAPI</span><span>LangGraph</span><span>ChromaDB</span><span>RAG</span><span>Docker</span><span>GitHub Actions</span><span>pytest</span>
-              </div>
+          <div class="card-diagram">
+            <svg viewBox="0 0 640 150" role="img" aria-label="Task queue architecture: API to Redis queues to workers to PostgreSQL, with a retry and dead-letter path.">
+              <path class="dedge" d="M120 40 H185"/>
+              <path class="dedge" d="M295 40 H360"/>
+              <path class="dedge" d="M470 40 H520"/>
+              <path class="dedge" d="M415 62 V96"/>
+              <rect class="dnode hot" x="10" y="18" width="110" height="44" rx="9"/>
+              <text class="dlbl" x="24" y="40">API</text>
+              <text class="dsub" x="24" y="53">FastAPI</text>
+              <rect class="dnode hot" x="185" y="18" width="110" height="44" rx="9"/>
+              <text class="dlbl" x="199" y="40">REDIS</text>
+              <text class="dsub" x="199" y="53">priority queues</text>
+              <rect class="dnode hot" x="360" y="18" width="110" height="44" rx="9"/>
+              <text class="dlbl" x="374" y="40">WORKERS</text>
+              <text class="dsub" x="374" y="53">pool</text>
+              <rect class="dnode" x="520" y="18" width="110" height="44" rx="9"/>
+              <text class="dlbl" x="534" y="40">POSTGRES</text>
+              <text class="dsub" x="534" y="53">job state</text>
+              <rect class="dnode" x="360" y="96" width="150" height="40" rx="9"/>
+              <text class="dlbl" x="374" y="115">RETRY / DLQ</text>
+              <text class="dsub" x="374" y="128">backoff + dead-letter</text>
+            </svg>
+          </div>
+              <div class="stack"><span>Python</span><span>FastAPI</span><span>Redis</span><span>PostgreSQL</span><span>Docker</span><span>GitHub Actions</span><span>pytest</span></div>
               <div class="card-links">
-                <a href="https://github.com/Snehagh/agentic-career-copilot" target="_blank" rel="noopener">
+                <a href="https://github.com/Snehagh/distributed-task-queue" target="_blank" rel="noopener">
                   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-                  Snehagh/agentic-career-copilot
+                  Snehagh/distributed-task-queue
                 </a>
               </div>
             </div>
             <div class="right">
               <div class="metrics">
-                <div class="metric"><span class="v">RAG</span><span class="l">Semantic retrieval</span></div>
-                <div class="metric"><span class="v">CI/CD</span><span class="l">Dockerized · GitHub Actions</span></div>
-                <div class="metric"><span class="v">pytest</span><span class="l">Swappable LLM layer</span></div>
+                <div class="metric"><span class="v">Redis queue</span><span class="l">Worker pool</span></div>
+                <div class="metric"><span class="v">Retries + DLQ</span><span class="l">Failure handling</span></div>
+                <div class="metric"><span class="v">Dockerized</span><span class="l">CI + tests</span></div>
               </div>
             </div>
           </div>
         </article>
 
-        <!-- EmotiCare -->
+        <!-- FEATURED 2: Agentic Career Copilot -->
         <article class="card reveal" data-track="sde ai">
           <div class="card-top">
             <div>
-              <h3>LLM Voice Assistant · EmotiCare</h3>
-              <div class="yr">2024</div>
+              <h3>Agentic Career Copilot</h3>
+              <div class="yr">2026 · full-stack, built end to end</div>
             </div>
             <div class="tracks"><span class="pill sde">Eng</span><span class="pill ai">AI</span></div>
           </div>
-          <p>Real-time voice application chaining speech-to-text → LLM → text-to-speech. I built the backend APIs and the orchestration layer that ties the components together, tuning for response relevance, latency, and conversational flow.</p>
+          <p>A production-structured local demo combining real semantic retrieval (RAG) with a swappable LLM orchestration layer, behind a FastAPI service with REST endpoints, containerized with Docker and shipped through GitHub Actions CI/CD with pytest coverage. I prioritized reliability and maintainability over live scraping as a deliberate design trade-off.</p>
           <div class="metrics">
-            <div class="metric"><span class="v">Real-time</span><span class="l">STT → LLM → TTS</span></div>
-            <div class="metric"><span class="v">Low-latency</span><span class="l">Orchestration layer</span></div>
+            <div class="metric"><span class="v">RAG</span><span class="l">Semantic retrieval</span></div>
+            <div class="metric"><span class="v">CI/CD</span><span class="l">Dockerized · GitHub Actions</span></div>
           </div>
-          <div class="stack"><span>Python</span><span>FastAPI</span><span>REST APIs</span><span>LLMs</span></div>
+          <div class="stack"><span>Python</span><span>FastAPI</span><span>LangGraph</span><span>ChromaDB</span><span>RAG</span><span>Docker</span><span>GitHub Actions</span><span>pytest</span></div>
           <div class="card-links">
-            <a href="https://github.com/Snehagh/emoticare" target="_blank" rel="noopener">
+            <a href="https://github.com/Snehagh/agentic-career-copilot" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-              Snehagh/emoticare
+              Snehagh/agentic-career-copilot
             </a>
           </div>
         </article>
 
-        <!-- Task Queue (SDE) -->
-        <article class="card reveal" data-track="sde">
-          <div class="card-top">
-            <div>
-              <h3>Distributed Task Queue &amp; Scheduler</h3>
-              <div class="yr">Backend / distributed systems</div>
-            </div>
-            <div class="tracks"><span class="pill sde">Eng</span></div>
-          </div>
-          <p>A job-processing service that accepts work over a REST API, queues it in Redis, and runs it across a pool of workers. Handles retries with exponential backoff, a dead-letter queue for failed jobs, and job-status tracking in PostgreSQL, all wired together with docker-compose and GitHub Actions CI.</p>
-          <div class="metrics">
-            <div class="metric"><span class="v">Redis queue</span><span class="l">Worker pool</span></div>
-            <div class="metric"><span class="v">Retries + DLQ</span><span class="l">Failure handling</span></div>
-            <div class="metric"><span class="v">Dockerized</span><span class="l">CI + pytest</span></div>
-          </div>
-          <div class="stack"><span>Python</span><span>FastAPI</span><span>Redis</span><span>PostgreSQL</span><span>Docker</span><span>GitHub Actions</span></div>
-          <div class="card-links">
-            <a href="https://github.com/Snehagh/distributed-task-queue" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-              Snehagh/distributed-task-queue
-            </a>
-          </div>
-        </article>
-
-        <!-- pkg-inspector (SDE) -->
-        <article class="card reveal" data-track="sde">
-          <div class="card-top">
-            <div>
-              <h3>pkg-inspector</h3>
-              <div class="yr">Open-source Python CLI</div>
-            </div>
-            <div class="tracks"><span class="pill sde">Eng</span></div>
-          </div>
-          <p>A dependency-free command-line tool that scores how ready a Python project is to package and ship, checking metadata, tests, CI, licensing, and structure, then printing a weighted report with actionable findings. Runs as a CI gate through exit codes, and the same tool is itself packaged three ways (snap, OCI rock, and Debian) with the tradeoffs written up.</p>
-          <div class="metrics">
-            <div class="metric"><span class="v">Zero deps</span><span class="l">By design</span></div>
-            <div class="metric"><span class="v">Text + JSON</span><span class="l">CI-gate exit codes</span></div>
-            <div class="metric"><span class="v">snap / rock / deb</span><span class="l">Three package targets</span></div>
-          </div>
-          <div class="stack"><span>Python</span><span>CLI</span><span>pytest</span><span>GitHub Actions</span><span>ruff</span><span>snap</span><span>Debian</span></div>
-          <div class="card-links">
-            <a href="https://github.com/Snehagh/pkg-inspector" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-              Snehagh/pkg-inspector
-            </a>
-          </div>
-        </article>
-
-        <!-- YOLOv8 -->
-        <article class="card reveal" data-track="ai">
-          <div class="card-top">
-            <div>
-              <h3>Real-Time Object Detection</h3>
-              <div class="yr">YOLOv8</div>
-            </div>
-            <div class="tracks"><span class="pill ai">AI</span></div>
-          </div>
-          <p>A real-time detection system built on YOLOv8 over a custom dataset. Fine-tuned for detection accuracy and optimized inference for real-time deployment, with robustness improved through data augmentation.</p>
-          <div class="metrics">
-            <div class="metric"><span class="v">Real-time</span><span class="l">Optimized inference</span></div>
-            <div class="metric"><span class="v">Custom</span><span class="l">Fine-tuned dataset</span></div>
-          </div>
-          <div class="stack"><span>Python</span><span>YOLOv8</span><span>Computer Vision</span></div>
-        </article>
-
-        <!-- Lung nodule (applied ML) -->
+        <!-- FEATURED 3: Multimodal Malignancy Prediction (Lung) -->
         <article class="card reveal" data-track="ai">
           <div class="card-top">
             <div>
@@ -666,48 +641,57 @@
           </div>
         </article>
 
-        <!-- Alzheimer's (applied ML) -->
-        <article class="card reveal" data-track="ai">
+        <!-- FEATURED 4: pkg-inspector -->
+        <article class="card reveal" data-track="sde">
           <div class="card-top">
             <div>
-              <h3>Alzheimer's Classification (MRI)</h3>
-              <div class="yr">2025 · applied deep learning · publication in progress</div>
+              <h3>pkg-inspector</h3>
+              <div class="yr">Open-source Python CLI</div>
             </div>
-            <div class="tracks"><span class="pill ai">AI</span></div>
+            <div class="tracks"><span class="pill sde">Eng</span></div>
           </div>
-          <p>A feature-fusion architecture combining 3D CNN imaging features with structured clinical variables. I designed the preprocessing pipelines for volumetric data and used Grad-CAM and SHAP to surface interpretable, trustworthy signals.</p>
+          <p>A dependency-free command-line tool that scores how ready a Python project is to package and ship, checking metadata, tests, CI, licensing, and structure, then printing a weighted report with actionable findings. Runs as a CI gate through exit codes, and the same tool is itself packaged three ways (snap, OCI rock, and Debian) with the tradeoffs written up.</p>
           <div class="metrics">
-            <div class="metric"><span class="v">~0.89</span><span class="l">Test accuracy</span></div>
-            <div class="metric"><span class="v">Grad-CAM</span><span class="l">+ SHAP interpretability</span></div>
+            <div class="metric"><span class="v">Zero deps</span><span class="l">By design</span></div>
+            <div class="metric"><span class="v">Text + JSON</span><span class="l">CI-gate exit codes</span></div>
+            <div class="metric"><span class="v">snap / rock / deb</span><span class="l">Three package targets</span></div>
           </div>
-          <div class="stack"><span>PyTorch</span><span>3D CNN</span><span>SHAP</span><span>Feature fusion</span></div>
-        </article>
-
-        <!-- Diabetes (published) -->
-        <article class="card reveal" data-track="ai">
-          <div class="card-top">
-            <div>
-              <h3>Risk Prediction with Machine Learning</h3>
-              <div class="yr">Published · ICIOT ’23</div>
-            </div>
-            <div class="tracks"><span class="pill ai">AI</span></div>
-          </div>
-          <p>Ensemble classification models with careful feature engineering and hyperparameter tuning, evaluated with accuracy, precision-recall and ROC-AUC. Identified the key risk factors driving predictions. Peer-reviewed and published at ICIOT ’23.</p>
-          <div class="metrics">
-            <div class="metric"><span class="v">Published</span><span class="l">ICIOT ’23</span></div>
-            <div class="metric"><span class="v">Ensemble</span><span class="l">ROC-AUC evaluated</span></div>
-          </div>
-          <div class="stack"><span>Python</span><span>Scikit-Learn</span><span>XGBoost</span></div>
+          <div class="stack"><span>Python</span><span>CLI</span><span>pytest</span><span>GitHub Actions</span><span>ruff</span><span>snap</span><span>Debian</span></div>
           <div class="card-links">
-            <a href="https://pubs.aip.org/aip/acp/article-abstract/3075/1/020114/3305066/Diabetes-prediction-using-machine-learning" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-              Read the paper (AIP)
+            <a href="https://github.com/Snehagh/pkg-inspector" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+              Snehagh/pkg-inspector
             </a>
           </div>
         </article>
 
       </div>
       <p class="no-match" id="noMatch">No projects in this track yet.</p>
+    </div>
+  </section>
+
+  <!-- ADDITIONAL WORK -->
+  <section id="more-work" class="more-wrap" aria-labelledby="more-h">
+    <div class="wrap">
+      <h3 id="more-h" class="more-head">Additional work</h3>
+      <ul class="more-list">
+        <li>
+          <div class="more-main"><span class="more-title">EmotiCare &#183; Voice Assistant</span><span class="pill sde">Eng</span><span class="pill ai">AI</span></div>
+          <p>Real-time voice assistant chaining speech-to-text, an LLM, and text-to-speech, with a FastAPI backend and orchestration layer. <a href="https://github.com/Snehagh/emoticare" target="_blank" rel="noopener">Snehagh/emoticare &#8599;</a></p>
+        </li>
+        <li>
+          <div class="more-main"><span class="more-title">Alzheimer's Classification (MRI)</span><span class="pill ai">AI</span></div>
+          <p>Feature-fusion 3D CNN over volumetric MRI and clinical variables, with Grad-CAM and SHAP interpretability. Publication in progress.</p>
+        </li>
+        <li>
+          <div class="more-main"><span class="more-title">Diabetes Prediction (Published)</span><span class="pill ai">AI</span></div>
+          <p>Ensemble ML models evaluated with ROC-AUC, identifying key risk factors. Peer-reviewed. <a href="https://pubs.aip.org/aip/acp/article-abstract/3075/1/020114/3305066/Diabetes-prediction-using-machine-learning" target="_blank" rel="noopener">Read the paper (AIP) &#8599;</a></p>
+        </li>
+        <li>
+          <div class="more-main"><span class="more-title">Real-Time Object Detection</span><span class="pill ai">AI</span></div>
+          <p>YOLOv8 detector fine-tuned on a custom dataset, with inference optimized for real-time deployment.</p>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -725,11 +709,27 @@
             <h3>Graduate Research Assistant <span class="co">· Penn State</span></h3>
             <span class="when">Jan 2025 - Present</span>
           </div>
-          <div class="meta">University Park, PA · multimodal ML research</div>
+          <div class="meta">University Park, PA · On-site</div>
           <ul>
-            <li>Built and maintained data pipelines across multi-source datasets (10k+ records), cutting analysis-cycle time 20% with zero data leakage.</li>
-            <li>Developed late-fusion 3D deep-learning models in PyTorch, improving F1 by 15% through cross-validation and hyperparameter tuning.</li>
-            <li>Led code reviews and rigorous validation, and applied SHAP / Grad-CAM interpretability to strengthen model trust and generalization.</li>
+            <li>Led multimodal machine learning research under Dr. Md Faisal Kabir, collaborating with Dr. Tim Brearly (Penn State Health) on 10k+ real-world clinical records to build predictive models for neurological risk stratification.</li>
+            <li>Built and optimized late-fusion 3D CNN (ResNet-18) architectures fusing MRI (ADNI) and CT (LIDC-IDRI) imaging with structured clinical data, improving F1-score 15% via cross-validation and hyperparameter tuning.</li>
+            <li>Engineered scalable preprocessing pipelines for heterogeneous healthcare datasets, cutting analysis cycle time 20% with zero data leakage.</li>
+            <li>Applied interpretability techniques (Grad-CAM, SHAP) to generate clinically meaningful insights and improve trust in model predictions.</li>
+            <li>Led code reviews and rigorous validation to strengthen model generalization and reliability.</li>
+          </ul>
+        </div>
+
+        <div class="job reveal">
+          <div class="job-head">
+            <h3>Graduate Teaching Assistant <span class="co">· Penn State</span></h3>
+            <span class="when">Aug 2024 - May 2026</span>
+          </div>
+          <div class="meta">University Park, PA · On-site</div>
+          <ul>
+            <li>Supported instruction and evaluation for core CS and data science courses including Data Structures, Data Management, Artificial Intelligence, Statistics, and Calculus.</li>
+            <li>Graded and provided feedback for 100+ students per semester, ensuring clarity in algorithmic, data-driven, and analytical problem-solving.</li>
+            <li>Mentored students in data structures, SQL, and foundational AI concepts, strengthening computational thinking and practical understanding.</li>
+            <li>Contributed across courses: CMPSC 132 (Data Structures), DS 220 (Data Management for Data Science), CMPSC 441 (Artificial Intelligence), STAT 200 (Statistics), and MATH 141 (Calculus II).</li>
           </ul>
         </div>
 
@@ -738,10 +738,12 @@
             <h3>Artificial Intelligence Intern <span class="co">· GAO Tek Inc.</span></h3>
             <span class="when">Jun 2025 - Aug 2025</span>
           </div>
-          <div class="meta">Remote</div>
+          <div class="meta">Pennsylvania, United States · Remote</div>
           <ul>
-            <li>Deployed LLM inference behind REST APIs (FastAPI) and built evaluation frameworks across 50+ test cases, improving pipeline reliability 25%.</li>
-            <li>Cut manual QA overhead ~3 hrs/week; findings drove two model-iteration cycles adopted across two teams.</li>
+            <li>Developed retrieval-augmented generation (RAG) pipelines integrating vector databases (FAISS) with LLMs to enable context-aware question answering.</li>
+            <li>Built evaluation frameworks for LLM systems (OpenAI APIs) across 50+ test cases and deployed LLM inference behind REST APIs (FastAPI), improving reliability 25% and cutting manual QA ~3 hrs/week.</li>
+            <li>Designed data preprocessing pipelines for large-scale datasets (100k+ samples), improving training efficiency and downstream model performance.</li>
+            <li>Partnered with engineering on testing and debugging; findings drove two model-iteration cycles adopted across two teams.</li>
           </ul>
         </div>
 
@@ -750,34 +752,26 @@
             <h3>AI/ML Engineer <span class="co">· Aeolus Engineering &amp; Technologies</span></h3>
             <span class="when">Dec 2023 - Jul 2024</span>
           </div>
-          <div class="meta">India · Full-time</div>
+          <div class="meta">Delhi, India · Full-time · On-site</div>
           <ul>
-            <li>Wrote clean Python and C++ to build deep-learning models and model-monitoring pipelines for drift detection, cutting mean-time-to-resolution 40%.</li>
-            <li>Contributed to code reviews and mentored teammates, delivering solutions across cross-functional engineering teams.</li>
+            <li>Designed and deployed end-to-end ML pipelines for predictive analytics in production, improving decision-making efficiency 30%.</li>
+            <li>Developed deep-learning models (CNNs, LSTMs) for computer vision and temporal-data tasks, achieving measurable gains in accuracy and performance.</li>
+            <li>Built model-monitoring pipelines for drift detection in Python and C++, cutting mean-time-to-resolution 40% and reducing processing delays 20%.</li>
+            <li>Contributed to code reviews and mentored teammates, delivering technical solutions across cross-functional engineering teams.</li>
           </ul>
         </div>
 
         <div class="job reveal">
           <div class="job-head">
-            <h3>Software Engineer <span class="co">· IDP Global Digital Campus</span></h3>
+            <h3>Software Engineer <span class="co">· IDP India</span></h3>
             <span class="when">Sep 2022 - Dec 2023</span>
           </div>
-          <div class="meta">India · Full-time · backend</div>
+          <div class="meta">Chennai, Tamil Nadu, India · Full-time · On-site</div>
           <ul>
-            <li>Built and maintained AWS-based backend data pipelines (S3, Lambda, EC2) processing 1,000+ daily interactions, reducing latency 35%.</li>
-            <li>Designed a microservices-based architecture for reliable communication across distributed services; wrote Python and SQL for feature engineering and ML-driven scoring (+18% relevance).</li>
-            <li>Shipped 5+ production deployments end to end - owning testing, debugging, and reliability alongside senior engineers.</li>
-          </ul>
-        </div>
-
-        <div class="job reveal">
-          <div class="job-head">
-            <h3>Machine Learning Intern <span class="co">· EBIW Info Analytics</span></h3>
-            <span class="when">Jun 2021 - Aug 2021</span>
-          </div>
-          <div class="meta">India · Hybrid</div>
-          <ul>
-            <li>Built predictive models on large-scale retail datasets using association-rule mining (Apriori, FP-Growth) and shipped dashboards to drive data-driven decisions.</li>
+            <li>Built and deployed AWS-based backend data pipelines (S3, Lambda) processing 1,000+ daily interactions, improving scalability and reducing response latency 35%.</li>
+            <li>Designed and implemented a microservices-based backend architecture, enabling reliable, scalable communication across distributed services.</li>
+            <li>Wrote Python and SQL for feature engineering and ML-driven scoring, improving contextual relevance 18%.</li>
+            <li>Shipped 5+ production deployments end to end, owning testing, debugging, and reliability improvements alongside senior engineers.</li>
           </ul>
         </div>
       </div>
